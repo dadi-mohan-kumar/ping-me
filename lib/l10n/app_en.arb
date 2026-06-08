@@ -1,0 +1,9 @@
+{
+  "@@locale": "en",
+  "settings": "Settings",
+  "logout": "Logout",
+  "darkTheme": "Dark Theme",
+  "chats": "Chats",
+  "searchChats": "Search Chats",
+  "noChatsYet": "No Chats Yet"
+}

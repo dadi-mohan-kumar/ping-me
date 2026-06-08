@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "11726000711",
+    "firebase_url": "https://pingme-7539a-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "pingme-7539a",
+    "storage_bucket": "pingme-7539a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:11726000711:android:6f6a648ce719faca071762",
+        "android_client_info": {
+          "package_name": "com.example.pingme"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBeaxyjID_GS1Zrwqe1ebpA9yNoPqrqNEA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
