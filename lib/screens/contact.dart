@@ -130,6 +130,7 @@ class _ContactScreenState extends State<ContactScreen> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           title: Text(AppLocalizations.of(context)!.chats),
+          // title: Image.asset('assets/pingMe.png',width: 200,),
 
           actions: [
             IconButton(

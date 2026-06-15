@@ -148,45 +148,99 @@ class ChatRepository {
     });
   }
 
+  // Future<bool> isBlocked({
+  //   required String currentUserId,
+  //   required String otherUserId,
+  // }) async {
+  //   final doc = await _firestore.collection('users').doc(currentUserId).get();
+
+  //   final blockedUsers = List<String>.from(doc['blockedUsers'] ?? []);
+
+  //   return blockedUsers.contains(otherUserId);
+  // }
+
   Future<bool> isBlocked({
     required String currentUserId,
     required String otherUserId,
   }) async {
     final doc = await _firestore.collection('users').doc(currentUserId).get();
 
-    final blockedUsers = List<String>.from(doc['blockedUsers'] ?? []);
+    final data = doc.data() ?? {};
+
+    final blockedUsers = List<String>.from(data['blockedUsers'] ?? []);
 
     return blockedUsers.contains(otherUserId);
   }
 
+  // Future<bool> canSendMessage({
+  //   required String senderId,
+  //   required String receiverId,
+  // }) async {
+  //   final senderDoc = await FirebaseFirestore.instance
+  //       .collection('users')
+  //       .doc(senderId)
+  //       .get();
+
+  //   final receiverDoc = await FirebaseFirestore.instance
+  //       .collection('users')
+  //       .doc(receiverId)
+  //       .get();
+
+  //   final senderBlocked = List<String>.from(senderDoc['blockedUsers'] ?? []);
+
+  //   final receiverBlocked = List<String>.from(
+  //     receiverDoc['blockedUsers'] ?? [],
+  //   );
+
+  //   if (senderBlocked.contains(receiverId)) {
+  //     return false;
+  //   }
+
+  //   if (receiverBlocked.contains(senderId)) {
+  //     return false;
+  //   }
+
+  //   return true;
+  // }
+
   Future<bool> canSendMessage({
-    required String senderId,
-    required String receiverId,
-  }) async {
-    final senderDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(senderId)
-        .get();
+  required String senderId,
+  required String receiverId,
+}) async {
 
-    final receiverDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(receiverId)
-        .get();
+  final senderDoc = await _firestore
+      .collection('users')
+      .doc(senderId)
+      .get();
 
-    final senderBlocked = List<String>.from(senderDoc['blockedUsers'] ?? []);
+  final receiverDoc = await _firestore
+      .collection('users')
+      .doc(receiverId)
+      .get();
 
-    final receiverBlocked = List<String>.from(
-      receiverDoc['blockedUsers'] ?? [],
-    );
+  final senderData = senderDoc.data() ?? {};
 
-    if (senderBlocked.contains(receiverId)) {
-      return false;
-    }
+  final receiverData = receiverDoc.data() ?? {};
 
-    if (receiverBlocked.contains(senderId)) {
-      return false;
-    }
+  final senderBlocked =
+      List<String>.from(
+        senderData['blockedUsers'] ?? [],
+      );
 
-    return true;
+  final receiverBlocked =
+      List<String>.from(
+        receiverData['blockedUsers'] ?? [],
+      );
+
+  if (senderBlocked.contains(receiverId)) {
+    return false;
   }
+
+  if (receiverBlocked.contains(senderId)) {
+    return false;
+  }
+
+  return true;
+}
+
 }
