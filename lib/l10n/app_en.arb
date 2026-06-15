@@ -5,5 +5,7 @@
   "darkTheme": "Dark Theme",
   "chats": "Chats",
   "searchChats": "Search Chats",
-  "noChatsYet": "No Chats Yet"
+  "noChatsYet": "No Chats Yet",
+  "startConversation": "Start the conversation",
+  "typeMessage": "Type a message"
 }

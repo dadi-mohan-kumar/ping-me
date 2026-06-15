@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:pingme/screens/all_contact.dart';
 import 'package:pingme/screens/chat.dart';
+import 'package:pingme/screens/force_update_screen.dart';
+import 'package:pingme/screens/profileImageScreen.dart';
 import 'package:pingme/screens/settings.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:pingme/l10n/app_localizations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pingme/repositories/chat_repository.dart';
 import 'package:pingme/services/notificationService.dart';
-
+import 'package:intl/intl.dart';
+import 'package:pingme/services/remote_config_service.dart';
+import 'package:pingme/widgets/app_theme.dart';
 import 'package:pingme/widgets/chat_tile.dart';
 
 // class ContactScreen extends StatefulWidget {
@@ -93,12 +97,28 @@ class _ContactScreenState extends State<ContactScreen> {
 
   String searchText = '';
 
-   @override
-    void initState() {
-      super.initState();
+  Future<void> checkForceUpdate() async {
+    final forceUpdate = await ForceUpdateService.isUpdateRequired();
 
-      NotificationService().initialize();
+    if (!mounted) return;
+
+    if (forceUpdate) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) =>
+              ForceUpdateScreen(playStoreUrl: ForceUpdateService.getStoreUrl()),
+        ),
+      );
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkForceUpdate();
+    NotificationService().initialize();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +129,7 @@ class _ContactScreenState extends State<ContactScreen> {
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          title: const Text('Chats'),
+          title: Text(AppLocalizations.of(context)!.chats),
 
           actions: [
             IconButton(
@@ -138,10 +158,10 @@ class _ContactScreenState extends State<ContactScreen> {
               padding: const EdgeInsets.all(8),
 
               child: TextField(
-                decoration: const InputDecoration(
-                  hintText: 'Search chats',
+                decoration: InputDecoration(
+                  hintText: AppLocalizations.of(context)!.searchChats,
 
-                  prefixIcon: Icon(Icons.search),
+                  prefixIcon: Icon(Icons.search, color: AppColors.primary),
 
                   border: OutlineInputBorder(),
                 ),
@@ -164,7 +184,9 @@ class _ContactScreenState extends State<ContactScreen> {
                   }
 
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Center(child: Text('No Chats Yet'));
+                    return Center(
+                      child: Text(AppLocalizations.of(context)!.noChatsYet),
+                    );
                   }
 
                   final chats = snapshot.data!.docs;
@@ -189,8 +211,8 @@ class _ContactScreenState extends State<ContactScreen> {
 
                       final otherUserId = participants.first;
 
-                      return FutureBuilder<DocumentSnapshot>(
-                        future: chatRepository.getUserById(otherUserId),
+                      return StreamBuilder<DocumentSnapshot>(
+                        stream: chatRepository.getUserStream(otherUserId),
 
                         builder: (context, userSnapshot) {
                           if (userSnapshot.connectionState ==
@@ -205,6 +227,7 @@ class _ContactScreenState extends State<ContactScreen> {
 
                           final userData =
                               userSnapshot.data!.data() as Map<String, dynamic>;
+                          final bool isOnline = userData['isOnline'] ?? false;
 
                           final name = userData['name']
                               .toString()
@@ -230,8 +253,7 @@ class _ContactScreenState extends State<ContactScreen> {
                           if (dateTime.day == now.day &&
                               dateTime.month == now.month &&
                               dateTime.year == now.year) {
-                            displayTime =
-                                '${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
+                            displayTime = DateFormat('h:mm a').format(dateTime);
                           } else if (dateTime.day ==
                                   now.subtract(const Duration(days: 1)).day &&
                               dateTime.month ==
@@ -250,35 +272,117 @@ class _ContactScreenState extends State<ContactScreen> {
                             return const SizedBox();
                           }
 
-                          return ListTile(
-                            leading: CircleAvatar(
-                              backgroundImage: NetworkImage(
-                                userData['profileImage'],
-                              ),
-                            ),
+                          return GestureDetector(
+                            onLongPress: () {
+                              showDialog(
+                                context: context,
+                                builder: (_) {
+                                  return AlertDialog(
+                                    title: const Text('Delete Chat'),
+                                    content: Text(
+                                      'Are you sure you want to delete the chat with ${userData['name']}?',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () async {
+                                          Navigator.pop(context);
 
-                            title: Text(userData['name']),
+                                          await chatRepository.deleteChat(
+                                            chatId: chat.id,
+                                          );
 
-                            subtitle: Text(
-                              chatData['lastMessage'] ?? '',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-
-                            trailing: Text(displayTime),
-
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => ChatScreen(
-                                    chatId: chat.id,
-                                    name: userData['name'],
-                                    imageUrl: userData['profileImage'],
-                                    receiverId: otherUserId,
-                                  ),
-                                ),
+                                          if (context.mounted) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text('Chat deleted'),
+                                              ),
+                                            );
+                                          }
+                                        },
+                                        child: const Text(
+                                          'Delete',
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
                               );
                             },
+                            child: ListTile(
+                              leading: GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => ProfileImageScreen(
+                                        imageUrl: userData['profileImage'],
+                                        name: userData['name'],
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Stack(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 22,
+                                      backgroundImage: NetworkImage(
+                                        userData['profileImage'],
+                                      ),
+                                    ),
+
+                                    if (isOnline)
+                                      Positioned(
+                                        right: 0,
+                                        bottom: 0,
+                                        child: Container(
+                                          width: 12,
+                                          height: 12,
+                                          decoration: BoxDecoration(
+                                            color: Colors.green,
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color: Colors.white,
+                                              width: 2,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+
+                              title: Text(userData['name']),
+
+                              subtitle: Text(
+                                chatData['lastMessage'] ?? '',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+
+                              trailing: Text(displayTime),
+
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => ChatScreen(
+                                      chatId: chat.id,
+                                      name: userData['name'],
+                                      imageUrl: userData['profileImage'],
+                                      receiverId: otherUserId,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                           );
                         },
                       );

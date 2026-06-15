@@ -8,10 +8,14 @@ import 'package:pingme/bloc/auth/auth_bloc.dart';
 import 'package:pingme/bloc/auth/auth_state.dart';
 import 'package:pingme/firebase_options.dart';
 import 'package:pingme/screens/contact.dart';
+import 'package:pingme/screens/force_update_screen.dart';
 import 'package:pingme/screens/login.dart';
 import 'package:pingme/services/notificationService.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:pingme/l10n/app_localizations.dart';
+import 'package:pingme/services/presence_service.dart';
+import 'package:pingme/services/remote_config_service.dart';
+import 'package:pingme/widgets/app_theme.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -26,10 +30,10 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
+  await ForceUpdateService.initialize();
   await NotificationService().initialize();
 
-  runApp(const PingMeApp());
+  runApp(PingMeApp());
 }
 
 class PingMeApp extends StatefulWidget {
@@ -43,8 +47,44 @@ class PingMeApp extends StatefulWidget {
   State<PingMeApp> createState() => _PingMeAppState();
 }
 
-class _PingMeAppState extends State<PingMeApp> {
+class _PingMeAppState extends State<PingMeApp> with WidgetsBindingObserver {
   bool isDarkMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addObserver(this);
+
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      PresenceService.setOnline(user.uid);
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) return;
+
+    if (state == AppLifecycleState.resumed) {
+      PresenceService.setOnline(user.uid);
+    }
+
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.detached) {
+      PresenceService.setOffline(user.uid);
+    }
+  }
 
   void changeTheme(bool value) {
     setState(() {
@@ -79,11 +119,8 @@ class _PingMeAppState extends State<PingMeApp> {
 
         debugShowCheckedModeBanner: false,
         themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-          useMaterial3: true,
-        ),
-        darkTheme: ThemeData.dark(),
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
 
         // Use a BlocConsumer or separate Listener/Builder to catch auth transitions
         home: BlocConsumer<AuthBloc, AuthState>(
@@ -98,21 +135,34 @@ class _PingMeAppState extends State<PingMeApp> {
             }
           },
           builder: (context, state) {
-            if (state is AuthenticatedState) {
-              return const ContactScreen();
-            } else if (state is UnAuthenticatedState) {
-              return const LoginScreen();
-            }
+            return FutureBuilder<bool>(
+              future: ForceUpdateService.isUpdateRequired(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const Scaffold(
+                    body: Center(child: CircularProgressIndicator()),
+                  );
+                }
 
-            // Cold start fallback behavior
-            final currentUser = FirebaseAuth.instance.currentUser;
-            if (currentUser != null) {
-              // Trigger the initial token save for silent cold updates
-              NotificationService().saveUserTokenToDatabase(currentUser.uid);
-              return const ContactScreen();
-            }
+                if (snapshot.data == true) {
+                  return ForceUpdateScreen(
+                    playStoreUrl: ForceUpdateService.getStoreUrl(),
+                  );
+                }
 
-            return const LoginScreen();
+                final currentUser = FirebaseAuth.instance.currentUser;
+
+                if (currentUser != null) {
+                  NotificationService().saveUserTokenToDatabase(
+                    currentUser.uid,
+                  );
+
+                  return const ContactScreen();
+                }
+
+                return const LoginScreen();
+              },
+            );
           },
         ),
       ),

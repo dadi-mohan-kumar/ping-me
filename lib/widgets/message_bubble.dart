@@ -1,97 +1,98 @@
 import 'package:flutter/material.dart';
 import 'package:pingme/models/message_model.dart';
+import 'package:intl/intl.dart';
+import 'package:pingme/widgets/app_theme.dart';
 
 class MessageBubble extends StatelessWidget {
   final MessageModel message;
 
   final bool isMe;
 
-  const MessageBubble({
-    super.key,
-    required this.message,
-    required this.isMe,
-  });
+  const MessageBubble({super.key, required this.message, required this.isMe});
 
   @override
   Widget build(BuildContext context) {
+    final displayMessage = message.deletedForEveryone
+        ? 'This message was deleted'
+        : message.message;
+
     return Align(
-      alignment:
-          isMe
-              ? Alignment.centerRight
-              : Alignment.centerLeft,
+      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            padding: const EdgeInsets.all(12),
+            constraints: const BoxConstraints(maxWidth: 250),
+            decoration: BoxDecoration(
+              color: isMe ? AppColors.primary : AppColors.grey,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  message.message,
+                  style: TextStyle(
+                    color: isMe ? AppColors.secondary : AppColors.dark,
+                  ),
+                ),
 
-      child: Container(
-        margin: const EdgeInsets.symmetric(
-          horizontal: 10,
-          vertical: 3,
-        ),
+                const SizedBox(height: 4),
 
-        padding: const EdgeInsets.all(12),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _formatTime(message.timestamp),
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: isMe ? AppColors.white : AppColors.dark,
+                      ),
+                    ),
 
-        constraints: const BoxConstraints(
-          maxWidth: 250,
-        ),
+                    if (isMe) ...[
+                      const SizedBox(width: 4),
 
-        decoration: BoxDecoration(
-          color:
-              isMe
-                  ? Colors.blue
-                  : Colors.grey.shade300,
+                      Icon(
+                        message.isSeen ? Icons.done_all : Icons.done,
+                        size: 16,
+                        color: message.isSeen ? Colors.blue : Colors.grey,
+                      ),
+                    ],
+                  ],
+                ),
+              ],
+            ),
+          ),
 
-          borderRadius:
-              BorderRadius.circular(12),
-        ),
-
-        child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.end,
-
-          children: [
-            Text(
-              message.message,
-
-              style: TextStyle(
-                color:
-                    isMe
-                        ? Colors.white
-                        : Colors.black,
+          if (message.reaction != null)
+            Positioned(
+              bottom: -8,
+              right: isMe ? 18 : null,
+              left: isMe ? null : 18,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black12, blurRadius: 3),
+                  ],
+                ),
+                child: Text(
+                  message.reaction!,
+                  style: const TextStyle(fontSize: 18),
+                ),
               ),
             ),
-
-            const SizedBox(height: 3),
-
-            Text(
-              _formatTime(
-                message.timestamp,
-              ),
-
-              style: TextStyle(
-                fontSize: 10,
-                color:
-                    isMe
-                        ? Colors.white70
-                        : Colors.black54,
-              ),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }
 
-  String _formatTime(
-    DateTime dateTime,
-  ) {
-    final hour =
-        dateTime.hour
-            .toString()
-            .padLeft(2, '0');
-
-    final minute =
-        dateTime.minute
-            .toString()
-            .padLeft(2, '0');
-
-    return '$hour:$minute';
+  String _formatTime(DateTime dateTime) {
+    return DateFormat('hh:mm a').format(dateTime);
   }
 }

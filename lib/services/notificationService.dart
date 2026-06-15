@@ -98,23 +98,23 @@ class NotificationService {
     }
   }
 
-  static Future<void> sendPushNotification({
-    required String receiverToken,
-    required String title,
-    required String body,
-  }) async {
-    try {
-      await http.post(
-        Uri.parse('https://your-backend-url.com/sendNotification'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'token': receiverToken,
-          'title': title,
-          'body': body,
-        }),
-      );
-    } catch (e) {
-      print('Notification Error: $e');
-    }
-  }
+  // static Future<void> sendPushNotification({
+  //   required String receiverToken,
+  //   required String title,
+  //   required String body,
+  // }) async {
+  //   try {
+  //     await http.post(
+  //       Uri.parse('https://your-backend-url.com/sendNotification'),
+  //       headers: {'Content-Type': 'application/json'},
+  //       body: jsonEncode({
+  //         'token': receiverToken,
+  //         'title': title,
+  //         'body': body,
+  //       }),
+  //     );
+  //   } catch (e) {
+  //     print('Notification Error: $e');
+  //   }
+  // }
 }

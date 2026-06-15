@@ -5,5 +5,9 @@
   "darkTheme": "డార్క్ థీమ్",
   "chats": "చాట్స్",
   "searchChats": "చాట్స్ వెతకండి",
-  "noChatsYet": "ఇంకా చాట్స్ లేవు"
+  "noChatsYet": "ఇంకా చాట్స్ లేవు",
+  "startConversation": "సంభాషణను ప్రారంభించండి",
+  "typeMessage": "సందేశాన్ని టైప్ చేయండి"
+
+
 }

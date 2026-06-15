@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:pingme/main.dart';
 import 'package:pingme/screens/login.dart';
 import 'package:pingme/l10n/app_localizations.dart';
+import 'package:pingme/widgets/app_theme.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -98,7 +99,7 @@ class SettingsScreen extends StatelessWidget {
 
               ListTile(
                 title: Text(AppLocalizations.of(context)!.logout),
-                trailing: Icon(Icons.logout, color: Colors.red),
+                trailing: Icon(Icons.logout, color: AppColors.red),
 
                 onTap: () async {
                   await FirebaseAuth.instance.signOut();

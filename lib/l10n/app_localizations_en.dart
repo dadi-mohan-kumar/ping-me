@@ -25,4 +25,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noChatsYet => 'No Chats Yet';
+
+  @override
+  String get startConversation => 'Start the conversation';
+
+  @override
+  String get typeMessage => 'Type a message';
 }

@@ -1,13 +1,14 @@
 plugins {
     id("com.android.application")
+    id("org.jetbrains.kotlin.android") // Move Kotlin directly under the Android application plugin
+    
     // START: FlutterFire Configuration
     id("com.google.gms.google-services")
     // END: FlutterFire Configuration
-    id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    
+    // The Flutter Gradle Plugin is correctly kept at the very bottom
     id("dev.flutter.flutter-gradle-plugin")
 }
-
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 }

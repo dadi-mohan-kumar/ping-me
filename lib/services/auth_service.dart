@@ -4,31 +4,38 @@ class AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   Future<void> sendOtp({
-    required String phoneNumber,
+  required String phoneNumber,
+  required Function(String verificationId) codeSent,
+  required Function(String error) failed,
+}) async {
 
-    required Function(String verificationId) codeSent,
+  print('Sending OTP to: $phoneNumber');
 
-    required Function(String error) failed,
-  }) async {
-    await _firebaseAuth.verifyPhoneNumber(
-      phoneNumber: phoneNumber,
+  await _firebaseAuth.verifyPhoneNumber(
+    phoneNumber: phoneNumber,
 
-      verificationCompleted: (PhoneAuthCredential credential) async {
-        await _firebaseAuth.signInWithCredential(credential);
-      },
+    verificationCompleted: (PhoneAuthCredential credential) async {
+      print('verificationCompleted');
+      await _firebaseAuth.signInWithCredential(credential);
+    },
 
-      verificationFailed: (FirebaseAuthException error) {
-        failed(error.message ?? 'Authentication Failed');
-      },
+    verificationFailed: (FirebaseAuthException error) {
+      print('verificationFailed: ${error.code}');
+      print('verificationFailed: ${error.message}');
+      failed(error.message ?? 'Authentication Failed');
+    },
 
-      codeSent: (String verificationId, int? resendToken) {
-        codeSent(verificationId);
-      },
+    codeSent: (String verificationId, int? resendToken) {
+      print('codeSent');
+      print('verificationId: $verificationId');
+      codeSent(verificationId);
+    },
 
-      codeAutoRetrievalTimeout: (String verificationId) {},
-    );
-  }
-
+    codeAutoRetrievalTimeout: (String verificationId) {
+      print('codeAutoRetrievalTimeout');
+    },
+  );
+}
   Future<UserCredential> verifyOtp({
     required String verificationId,
 

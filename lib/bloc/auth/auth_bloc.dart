@@ -7,12 +7,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _authRepository = AuthRepository();
 
   AuthBloc() : super(AuthInitial()) {
+    
     on<SendOtpEvent>(_sendOtp);
-
     on<VerifyOtpEvent>(_verifyOtp);
-
     on<LogoutEvent>(_logout);
-
+    on<AuthErrorEvent>(_authError);
     on<OtpSentSuccessEvent>(_otpSentSuccess);
   }
 
@@ -24,7 +23,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(OtpSentState(verificationId: event.verificationId));
   }
 
+  Future<void> _authError(AuthErrorEvent event, Emitter<AuthState> emit) async {
+    emit(AuthErrorState(message: event.message));
+  }
+
   Future<void> _sendOtp(SendOtpEvent event, Emitter<AuthState> emit) async {
+    print('SendOtpEvent received');
+
     emit(AuthLoading());
 
     try {
@@ -32,14 +37,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         phoneNumber: event.phoneNumber,
 
         codeSent: (verificationId) {
+          print('Adding OtpSentSuccessEvent');
+
           add(OtpSentSuccessEvent(verificationId: verificationId));
         },
 
         failed: (error) {
-          emit(AuthErrorState(message: error));
+          print('Adding AuthErrorEvent');
+
+          add(AuthErrorEvent(message: error));
         },
       );
     } catch (e) {
+      print('Exception: $e');
+
       emit(AuthErrorState(message: e.toString()));
     }
   }

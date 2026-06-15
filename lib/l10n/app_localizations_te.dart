@@ -25,4 +25,10 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get noChatsYet => 'ఇంకా చాట్స్ లేవు';
+
+  @override
+  String get startConversation => 'సంభాషణను ప్రారంభించండి';
+
+  @override
+  String get typeMessage => 'సందేశాన్ని టైప్ చేయండి';
 }

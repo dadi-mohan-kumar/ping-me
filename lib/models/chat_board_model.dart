@@ -7,11 +7,14 @@ class ChatBoardModel {
 
   final DateTime lastMessageTime;
 
+  final String? typingBy;
+
   ChatBoardModel({
     required this.chatId,
     required this.participants,
     required this.lastMessage,
     required this.lastMessageTime,
+    this.typingBy,
   });
 
   Map<String, dynamic> toMap() {
@@ -21,6 +24,7 @@ class ChatBoardModel {
       'lastMessage': lastMessage,
       'lastMessageTime':
           lastMessageTime.toIso8601String(),
+      'typingBy' : typingBy,
     };
   }
 
@@ -36,6 +40,7 @@ class ChatBoardModel {
       lastMessageTime: DateTime.parse(
         map['lastMessageTime'],
       ),
+      typingBy: map['typingBy'],
     );
   }
 }
