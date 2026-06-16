@@ -1,8 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'package:pingme/appBar/commonAppBar.dart';
 import 'package:pingme/bloc/auth/auth_bloc.dart';
 import 'package:pingme/bloc/auth/auth_event.dart';
 import 'package:pingme/bloc/auth/auth_state.dart';

@@ -107,7 +107,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     showDialog(
       context: context,
-      barrierColor: Colors.transparent,
+      // barrierColor: Colors.transparent,
       builder: (_) {
         return Dialog(
           child: Padding(
@@ -370,7 +370,6 @@ class _ChatScreenState extends State<ChatScreen> {
                   itemCount: docs.length,
 
                   itemBuilder: (context, index) {
-                    // final data = docs[index].data() as Map<String, dynamic>;
                     final doc = docs[index];
                     final data = doc.data() as Map<String, dynamic>;
 

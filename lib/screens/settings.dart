@@ -34,7 +34,7 @@ class SettingsScreen extends StatelessWidget {
           }
 
           final userData = snapshot.data!;
-          final l10n = AppLocalizations.of(context)!;
+          // final l10n = AppLocalizations.of(context)!;
 
           return Column(
             children: [

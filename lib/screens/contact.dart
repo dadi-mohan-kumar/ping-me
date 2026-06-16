@@ -13,7 +13,6 @@ import 'package:pingme/services/notificationService.dart';
 import 'package:intl/intl.dart';
 import 'package:pingme/services/remote_config_service.dart';
 import 'package:pingme/widgets/app_theme.dart';
-import 'package:pingme/widgets/chat_tile.dart';
 
 // class ContactScreen extends StatefulWidget {
 //   const ContactScreen({super.key});

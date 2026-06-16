@@ -148,16 +148,6 @@ class ChatRepository {
     });
   }
 
-  // Future<bool> isBlocked({
-  //   required String currentUserId,
-  //   required String otherUserId,
-  // }) async {
-  //   final doc = await _firestore.collection('users').doc(currentUserId).get();
-
-  //   final blockedUsers = List<String>.from(doc['blockedUsers'] ?? []);
-
-  //   return blockedUsers.contains(otherUserId);
-  // }
 
   Future<bool> isBlocked({
     required String currentUserId,

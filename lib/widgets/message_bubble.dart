@@ -12,9 +12,6 @@ class MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayMessage = message.deletedForEveryone
-        ? 'This message was deleted'
-        : message.message;
 
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
