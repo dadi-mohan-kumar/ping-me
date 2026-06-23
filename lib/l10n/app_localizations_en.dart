@@ -31,4 +31,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get typeMessage => 'Type a message';
+
+  @override
+  String get allContacts => 'All Contacts';
+
+  @override
+  String get searchPeople => 'Search People';
+
+  @override
+  String get invite => 'Invite';
+
+  @override
+  String get chat => 'Chat';
+
+  @override
+  String get discoverPeople => 'Discover People';
+
+  @override
+  String get searchUsersByPhoneNumber => 'Search users by phone number';
 }

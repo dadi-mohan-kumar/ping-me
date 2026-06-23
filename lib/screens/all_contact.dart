@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pingme/l10n/app_localizations.dart';
 
 import 'package:pingme/models/discover_user_model.dart';
 import 'package:pingme/repositories/chat_repository.dart';
@@ -34,12 +36,40 @@ class _AllContactsState extends State<AllContacts> {
     loadContacts();
   }
 
+  Set<String> registeredNumbers = {};
+
+  Future<void> loadRegisteredNumbers() async {
+    final users = await FirebaseFirestore.instance.collection('users').get();
+
+    registeredNumbers = users.docs.map((doc) {
+      return normalizePhone(doc['phoneNumber']);
+    }).toSet();
+  }
+
   Future<void> loadContacts() async {
     setState(() {
       isLoading = true;
     });
 
+    await loadRegisteredNumbers();
+
     allContacts = await contactRepository.getDeviceContacts();
+
+    allContacts.sort((a, b) {
+      final aRegistered =
+          a.phones.isNotEmpty &&
+          registeredNumbers.contains(normalizePhone(a.phones.first.number));
+
+      final bRegistered =
+          b.phones.isNotEmpty &&
+          registeredNumbers.contains(normalizePhone(b.phones.first.number));
+
+      if (aRegistered == bRegistered) {
+        return a.displayName.compareTo(b.displayName);
+      }
+
+      return aRegistered ? -1 : 1;
+    });
 
     setState(() {
       searchResults = allContacts;
@@ -108,7 +138,7 @@ class _AllContactsState extends State<AllContacts> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('All Contacts')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.allContacts)),
 
       body: Column(
         children: [
@@ -117,8 +147,8 @@ class _AllContactsState extends State<AllContacts> {
             child: TextField(
               controller: searchController,
 
-              decoration: const InputDecoration(
-                hintText: 'Search people',
+              decoration: InputDecoration(
+                hintText: AppLocalizations.of(context)!.searchPeople,
                 prefixIcon: Icon(Icons.search),
               ),
 
@@ -180,7 +210,8 @@ class _AllContactsState extends State<AllContacts> {
                                 onPressed: () {
                                   openChat(user);
                                 },
-                                child: const Text('Chat'),
+                                // child: Text(AppLocalizations.of(context)!.chat),
+                                child: Text('chat'),
                               )
                             : ElevatedButton(
                                 onPressed: () {
@@ -190,7 +221,8 @@ class _AllContactsState extends State<AllContacts> {
                                     ),
                                   );
                                 },
-                                child: const Text('Invite'),
+                                // child: Text(AppLocalizations.of(context)!.invite),
+                                child: Text('invite'),
                               ),
                       );
                     },

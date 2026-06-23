@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:pingme/repositories/chat_repository.dart';
 import 'package:pingme/screens/chat.dart';
 import 'package:pingme/widgets/chat_tile.dart';
+import 'package:pingme/l10n/app_localizations.dart';
+
 
 class DiscoverPeopleScreen extends StatefulWidget {
   const DiscoverPeopleScreen({super.key});
@@ -27,7 +29,7 @@ class _DiscoverPeopleScreenState extends State<DiscoverPeopleScreen> {
     //  print(token);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Discover people')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.discoverPeople)),
 
       body: Column(
         children: [
@@ -36,8 +38,8 @@ class _DiscoverPeopleScreenState extends State<DiscoverPeopleScreen> {
 
             child: TextField(
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                hintText: 'Search users by phone number',
+              decoration: InputDecoration(
+                hintText: AppLocalizations.of(context)!.searchUsersByPhoneNumber,
 
                 prefixIcon: Icon(Icons.search),
 
@@ -54,7 +56,7 @@ class _DiscoverPeopleScreenState extends State<DiscoverPeopleScreen> {
 
           Expanded(
             child: searchText.trim().isEmpty
-                ? const Center(child: Text('Search users by phone number'))
+                ?  Center(child: Text(AppLocalizations.of(context)!.searchUsersByPhoneNumber))
                 : StreamBuilder<QuerySnapshot>(
                     stream: chatRepository.getUsers(),
                     builder: (context, snapshot) {

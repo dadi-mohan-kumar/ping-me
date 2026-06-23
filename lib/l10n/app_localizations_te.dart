@@ -31,4 +31,23 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get typeMessage => 'సందేశాన్ని టైప్ చేయండి';
+
+  @override
+  String get allContacts => 'అన్ని పరిచయాలు';
+
+  @override
+  String get searchPeople => 'వ్యక్తులను వెతకండి';
+
+  @override
+  String get invite => 'ఆహ్వానించండి';
+
+  @override
+  String get chat => 'చాట్';
+
+  @override
+  String get discoverPeople => 'వ్యక్తులను కనుగొనండి';
+
+  @override
+  String get searchUsersByPhoneNumber =>
+      'ఫోన్ నంబర్ ద్వారా వినియోగదారులను వెతకండి';
 }

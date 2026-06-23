@@ -7,5 +7,12 @@
   "searchChats": "Search Chats",
   "noChatsYet": "No Chats Yet",
   "startConversation": "Start the conversation",
-  "typeMessage": "Type a message"
+  "typeMessage": "Type a message",
+
+  "allContacts": "All Contacts",
+  "searchPeople": "Search People",
+  "invite": "Invite",
+  "chat": "Chat",
+  "discoverPeople": "Discover People",
+  "searchUsersByPhoneNumber": "Search users by phone number"
 }

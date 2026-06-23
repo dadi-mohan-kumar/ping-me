@@ -7,7 +7,12 @@
   "searchChats": "చాట్స్ వెతకండి",
   "noChatsYet": "ఇంకా చాట్స్ లేవు",
   "startConversation": "సంభాషణను ప్రారంభించండి",
-  "typeMessage": "సందేశాన్ని టైప్ చేయండి"
+  "typeMessage": "సందేశాన్ని టైప్ చేయండి",
 
-
+  "allContacts": "అన్ని పరిచయాలు",
+  "searchPeople": "వ్యక్తులను వెతకండి",
+  "invite": "ఆహ్వానించండి",
+  "chat": "చాట్",
+  "discoverPeople": "వ్యక్తులను కనుగొనండి",
+  "searchUsersByPhoneNumber": "ఫోన్ నంబర్ ద్వారా వినియోగదారులను వెతకండి"
 }

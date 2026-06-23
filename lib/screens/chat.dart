@@ -178,6 +178,7 @@ class _ChatScreenState extends State<ChatScreen> {
     if (text.isEmpty) return;
 
     isSending = true;
+    messageController.clear();
 
     try {
       final receiverToken = await chatRepository.getUserFcmToken(
@@ -215,7 +216,7 @@ class _ChatScreenState extends State<ChatScreen> {
         );
       }
 
-      messageController.clear();
+      
     } finally {
       if (mounted) {
         isSending = false;

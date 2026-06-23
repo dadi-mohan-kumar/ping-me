@@ -145,6 +145,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Type a message'**
   String get typeMessage;
+
+  /// No description provided for @allContacts.
+  ///
+  /// In en, this message translates to:
+  /// **'All Contacts'**
+  String get allContacts;
+
+  /// No description provided for @searchPeople.
+  ///
+  /// In en, this message translates to:
+  /// **'Search People'**
+  String get searchPeople;
+
+  /// No description provided for @invite.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite'**
+  String get invite;
+
+  /// No description provided for @chat.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get chat;
+
+  /// No description provided for @discoverPeople.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover People'**
+  String get discoverPeople;
+
+  /// No description provided for @searchUsersByPhoneNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Search users by phone number'**
+  String get searchUsersByPhoneNumber;
 }
 
 class _AppLocalizationsDelegate
