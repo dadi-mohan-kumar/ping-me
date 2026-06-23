@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:pingme/models/message_model.dart';
 import 'package:pingme/models/user_model.dart';
-
 import 'package:pingme/services/chat_service.dart';
 
 class ChatRepository {
@@ -148,7 +146,6 @@ class ChatRepository {
     });
   }
 
-
   Future<bool> isBlocked({
     required String currentUserId,
     required String otherUserId,
@@ -194,43 +191,50 @@ class ChatRepository {
   // }
 
   Future<bool> canSendMessage({
-  required String senderId,
-  required String receiverId,
-}) async {
+    required String senderId,
+    required String receiverId,
+  }) async {
+    final senderDoc = await _firestore.collection('users').doc(senderId).get();
 
-  final senderDoc = await _firestore
-      .collection('users')
-      .doc(senderId)
-      .get();
+    final receiverDoc = await _firestore
+        .collection('users')
+        .doc(receiverId)
+        .get();
 
-  final receiverDoc = await _firestore
-      .collection('users')
-      .doc(receiverId)
-      .get();
+    final senderData = senderDoc.data() ?? {};
 
-  final senderData = senderDoc.data() ?? {};
+    final receiverData = receiverDoc.data() ?? {};
 
-  final receiverData = receiverDoc.data() ?? {};
+    final senderBlocked = List<String>.from(senderData['blockedUsers'] ?? []);
 
-  final senderBlocked =
-      List<String>.from(
-        senderData['blockedUsers'] ?? [],
-      );
+    final receiverBlocked = List<String>.from(
+      receiverData['blockedUsers'] ?? [],
+    );
 
-  final receiverBlocked =
-      List<String>.from(
-        receiverData['blockedUsers'] ?? [],
-      );
+    if (senderBlocked.contains(receiverId)) {
+      return false;
+    }
 
-  if (senderBlocked.contains(receiverId)) {
-    return false;
+    if (receiverBlocked.contains(senderId)) {
+      return false;
+    }
+
+    return true;
   }
 
-  if (receiverBlocked.contains(senderId)) {
-    return false;
+  Future<QueryDocumentSnapshot?> findUserByPhone(String phone) async {
+    final cleanPhone = phone.replaceAll(RegExp(r'[^0-9]'), '');
+
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('phoneNumber', isEqualTo: cleanPhone)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isEmpty) {
+      return null;
+    }
+
+    return snapshot.docs.first;
   }
-
-  return true;
-}
-
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pingme/screens/all_contact.dart';
 import 'package:pingme/screens/chat.dart';
+import 'package:pingme/screens/discover_people_screen.dart';
 import 'package:pingme/screens/force_update_screen.dart';
 import 'package:pingme/screens/profileImageScreen.dart';
 import 'package:pingme/screens/settings.dart';
@@ -129,14 +130,14 @@ class _ContactScreenState extends State<ContactScreen> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           title: Text(AppLocalizations.of(context)!.chats),
-          // title: Image.asset('assets/pingMe.png',width: 200,),
 
+          // title: Image.asset('assets/pingMe.png',width: 200,),
           actions: [
             IconButton(
               onPressed: () {
                 Navigator.of(
                   context,
-                ).push(MaterialPageRoute(builder: (_) => const AllContact()));
+                ).push(MaterialPageRoute(builder: (_) => const AllContacts()));
               },
               icon: const Icon(Icons.add),
             ),
@@ -392,6 +393,15 @@ class _ContactScreenState extends State<ContactScreen> {
               ),
             ),
           ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.person_add),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const DiscoverPeopleScreen()),
+            );
+          },
         ),
       ),
     );

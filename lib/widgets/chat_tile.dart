@@ -8,6 +8,8 @@ class ChatTile extends StatelessWidget {
 
   final VoidCallback onTap;
 
+  final String phone;
+
   const ChatTile({
 
     super.key,
@@ -17,6 +19,8 @@ class ChatTile extends StatelessWidget {
     required this.imageUrl,
 
     required this.onTap,
+
+    required this.phone,
   });
 
   @override
@@ -30,6 +34,7 @@ class ChatTile extends StatelessWidget {
       ),
 
       title: Text(name),
+      subtitle: Text(phone),
 
       onTap: onTap,
     );
